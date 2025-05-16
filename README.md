@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# School DOB Certificate Generator
 
-## Getting Started
+A web application for generating school Date of Birth (DOB) certificates from Excel data.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Excel upload with auto-detection of columns
+- Manage student data with a searchable, paginated table
+- Photo management with bulk photo assignment
+- Certificate generation with DOB data
+- Preview and print certificates
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend**: Next.js (React) with Tailwind CSS
+- **Backend** (optional): PHP with PHPSpreadsheet and PHPWord
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup Instructions
 
-## Learn More
+### Frontend Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository
+   ```bash
+   git clone <repository-url>
+   cd certificate-generator
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Run the development server
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### PHP Backend Setup (Optional)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application can run with client-side only features. However, for full functionality including server-side certificate generation:
+
+1. Install PHP 7.4 or higher and Composer
+
+2. Navigate to the PHP directory
+   ```bash
+   cd public/api
+   ```
+
+3. Install PHP dependencies
+   ```bash
+   composer install
+   ```
+
+4. Ensure the output and photos directories are writable
+   ```bash
+   chmod -R 755 ../../output
+   chmod -R 755 ../../photos
+   ```
+
+## Usage
+
+1. **Upload Excel**: Use the upload section to select your Excel file containing student data.
+   - The application will automatically detect columns for Name, Father's Name, Mother's Name, DOB, DOB in Words, Class, and Address.
+
+2. **Manage Students**: The data table allows you to:
+   - Search, filter, and paginate student records
+   - Select students for certificate generation
+   - Double-click a row to edit student details
+
+3. **Photo Management**:
+   - Bulk-assign photos to selected students
+   - Toggle whether to include photos in certificates
+
+4. **Generate Certificates**:
+   - Create a certificate template or use the default
+   - Select students and click "Generate Certificates"
+   - Preview, print, or download the generated certificates
+
+## Sample Excel Format
+
+Create a sample Excel file with the following columns:
+- Name
+- Father's Name
+- Mother's Name
+- DOB
+- DOB in Words
+- Class
+- Address
+
+## License
+
+MIT
