@@ -1,103 +1,264 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import FileUpload from '../components/FileUpload';
+import StudentTable from '../components/StudentTable';
+import StudentEditModal from '../components/StudentEditModal';
+import PhotoManager from '../components/PhotoManager';
+import CertificateGenerator from '../components/CertificateGenerator';
+import ApiDiagnostics from '../components/ApiDiagnostics';
+import { Student, AppState } from '../utils/types';
 
 export default function Home() {
+  // Application state
+  const [appState, setAppState] = useState<AppState>({
+    students: [],
+    selectedStudents: [],
+    includePhotos: true,
+    currentPage: 1,
+    itemsPerPage: 10,
+    searchTerm: '',
+  });
+  
+  // Edit modal state
+  const [editStudent, setEditStudent] = useState<Student | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Handle file upload
+  const handleFileProcessed = (students: Student[]) => {
+    setAppState({
+      ...appState,
+      students,
+      selectedStudents: [],
+      currentPage: 1,
+    });
+  };
+  
+  // Handle student selection
+  const handleStudentSelect = (id: string, selected: boolean) => {
+    if (selected) {
+      setAppState({
+        ...appState,
+        selectedStudents: [...appState.selectedStudents, id],
+      });
+    } else {
+      setAppState({
+        ...appState,
+        selectedStudents: appState.selectedStudents.filter(studentId => studentId !== id),
+      });
+    }
+  };
+  
+  // Handle select all students
+  const handleSelectAll = (selected: boolean) => {
+    // Get all students on the current page
+    const startIndex = (appState.currentPage - 1) * appState.itemsPerPage;
+    const filteredStudents = appState.students.filter(student => {
+      if (!appState.searchTerm) return true;
+      
+      const term = appState.searchTerm.toLowerCase();
+      return (
+        student.name.toLowerCase().includes(term) ||
+        student.fatherName.toLowerCase().includes(term) ||
+        student.motherName.toLowerCase().includes(term) ||
+        student.class.toLowerCase().includes(term) ||
+        student.dob.toLowerCase().includes(term)
+      );
+    });
+    const paginatedStudents = filteredStudents.slice(startIndex, startIndex + appState.itemsPerPage);
+    
+    if (selected) {
+      // Add current page students to selection if not already selected
+      const currentPageIds = paginatedStudents.map(s => s.id);
+      const newSelectedStudents = [
+        ...appState.selectedStudents,
+        ...currentPageIds.filter(id => !appState.selectedStudents.includes(id)),
+      ];
+      setAppState({
+        ...appState,
+        selectedStudents: newSelectedStudents,
+      });
+    } else {
+      // Remove current page students from selection
+      const currentPageIds = paginatedStudents.map(s => s.id);
+      const newSelectedStudents = appState.selectedStudents.filter(
+        id => !currentPageIds.includes(id)
+      );
+      setAppState({
+        ...appState,
+        selectedStudents: newSelectedStudents,
+      });
+    }
+  };
+  
+  // Handle editing a student
+  const handleEditStudent = (student: Student) => {
+    setEditStudent(student);
+    setIsEditModalOpen(true);
+  };
+  
+  // Handle creating a new student
+  const handleAddStudent = () => {
+    const newStudent: Student = {
+      id: uuidv4(),
+      name: '',
+      fatherName: '',
+      motherName: '',
+      dob: '',
+      dobInWords: '',
+      class: '',
+      address: '',
+    };
+    setEditStudent(newStudent);
+    setIsEditModalOpen(true);
+  };
+  
+  // Handle saving a student
+  const handleSaveStudent = (student: Student) => {
+    const isNew = !appState.students.some(s => s.id === student.id);
+    
+    if (isNew) {
+      // Add new student
+      setAppState({
+        ...appState,
+        students: [...appState.students, student],
+      });
+    } else {
+      // Update existing student
+      setAppState({
+        ...appState,
+        students: appState.students.map(s => 
+          s.id === student.id ? student : s
+        ),
+      });
+    }
+  };
+  
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setAppState({
+      ...appState,
+      currentPage: page,
+    });
+  };
+  
+  // Handle search
+  const handleSearchChange = (term: string) => {
+    setAppState({
+      ...appState,
+      searchTerm: term,
+      currentPage: 1, // Reset to first page on search
+    });
+  };
+  
+  // Handle photo toggle
+  const handlePhotoToggle = (include: boolean) => {
+    setAppState({
+      ...appState,
+      includePhotos: include,
+    });
+  };
+  
+  // Handle updating students (e.g. after bulk photo assignment)
+  const handleStudentsUpdate = (updatedStudents: Student[]) => {
+    setAppState({
+      ...appState,
+      students: updatedStudents,
+    });
+  };
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="min-h-screen bg-gradient-to-r from-blue-900 to-blue-700 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white">
+            School DOB Certificate Generator
+          </h1>
+          <p className="mt-2 text-lg text-blue-100">
+            Upload Excel, manage student data, and generate certificates
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        
+        {/* Main content */}
+        <div className="space-y-8">
+          {/* File upload section */}
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              1. Upload Student Excel Data
+            </h2>
+            <FileUpload onFileProcessed={handleFileProcessed} />
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleAddStudent}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Add New Student
+              </button>
+            </div>
+          </div>
+          
+          {/* Data management section */}
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              2. Manage Student Data
+            </h2>
+            
+            <StudentTable
+              students={appState.students}
+              selectedStudents={appState.selectedStudents}
+              onStudentSelect={handleStudentSelect}
+              onSelectAll={handleSelectAll}
+              onEditStudent={handleEditStudent}
+              currentPage={appState.currentPage}
+              itemsPerPage={appState.itemsPerPage}
+              onPageChange={handlePageChange}
+              searchTerm={appState.searchTerm}
+              onSearchChange={handleSearchChange}
+            />
+          </div>
+          
+          {/* Photo management section */}
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              3. Manage Photos
+            </h2>
+            
+            <PhotoManager
+              students={appState.students}
+              selectedStudents={appState.selectedStudents}
+              includePhotos={appState.includePhotos}
+              onPhotoToggle={handlePhotoToggle}
+              onStudentsUpdate={handleStudentsUpdate}
+            />
+          </div>
+          
+          {/* Certificate generation section */}
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              4. Generate Certificates
+            </h2>
+            
+            <CertificateGenerator
+              students={appState.students}
+              selectedStudents={appState.selectedStudents}
+              includePhotos={appState.includePhotos}
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* Student edit modal */}
+      <StudentEditModal
+        student={editStudent}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveStudent}
+      />
+      
+      <ApiDiagnostics />
+    </main>
   );
 }

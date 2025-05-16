@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date of Birth Certificate</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #b91c1c;
+            --accent-color: #f59e0b;
+            --border-color: #1e3a8a;
+            --background-color: #f9fafb;
+            --text-color: #1f2937;
+            --light-color: #f3f4f6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Raleway', sans-serif;
+            line-height: 1.8;
+            background: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        
+        .certificate-container {
+            max-width: 210mm;
+            margin: 0 auto;
+        }
+        
+        .certificate {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 20mm 15mm;
+            background: white;
+            border: 15px solid transparent;
+            border-image: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--secondary-color), var(--primary-color)) 1;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+        
+        .certificate-inner {
+            position: relative;
+            padding: 20px;
+            border: 3px double var(--primary-color);
+            height: calc(100% - 40px);
+            background: white;
+            background-image: 
+                radial-gradient(circle at 30% 20%, rgba(30, 58, 138, 0.03) 0%, transparent 300px),
+                radial-gradient(circle at 70% 80%, rgba(185, 28, 28, 0.03) 0%, transparent 300px);
+        }
+        
+        .certificate-inner::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(30, 58, 138, 0.3);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 100px;
+            font-family: 'Playfair Display', serif;
+            color: rgba(30, 58, 138, 0.03);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 20px;
+            border-bottom: 3px double var(--accent-color);
+        }
+        
+        .office-title {
+            font-size: 18px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+        
+        .school-name {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            margin: 10px 0;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+        }
+        
+        .decorative-line {
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+            margin: 10px auto;
+        }
+        
+        .decorative-symbol {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin: 0 10px;
+            opacity: 0.7;
+        }
+        
+        .student-photo-container {
+            float: right;
+            width: 100px;
+            height: 120px;
+            margin-left: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .student-photo {
+            width: 100%;
+            height: 100%;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            overflow: hidden;
+            object-fit: cover;
+            background-color: #f5f5f5;
+        }
+        
+        .student-photo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        
+        .content {
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .to-whom {
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        .to-whom::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+        }
+        
+        .decorative-element {
+            position: absolute;
+            left: 0;
+            bottom: 20px;
+            width: 150px;
+            height: 150px;
+            background-image: radial-gradient(circle, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
+            border-left: 2px solid rgba(245, 158, 11, 0.2);
+            border-bottom: 2px solid rgba(245, 158, 11, 0.2);
+            border-bottom-left-radius: 150px;
+            z-index: 0;
+        }
+        
+        .certificate-text {
+            text-align: justify;
+            font-size: 16px;
+            line-height: 2;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .certificate-text p {
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 1px dotted var(--accent-color);
+            padding-bottom: 2px;
+            display: inline-block;
+            min-width: 120px;
+        }
+        
+        .dob-section {
+            margin: 25px 0;
+            padding: 10px 15px;
+            background-color: rgba(245, 158, 11, 0.05);
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            margin-top: 60px;
+            position: relative;
+            padding-bottom: 60px;
+            z-index: 1;
+        }
+        
+        .signature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px 10px 5px;
+            border-radius: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .signature-image {
+            width: 150px;
+            height: 40px;
+            border-bottom: 1px dashed var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .signature-line {
+            width: 180px;
+            border-top: 1px solid var(--primary-color);
+            margin-top: 5px;
+            padding-top: 5px;
+            font-weight: 700;
+            font-size: 16px;
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        .date {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+        }
+        
+        .date-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .certificate-id {
+            display: none; /* Hide certificate ID completely */
+        }
+        
+        .border-decoration {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .border-decoration.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 3px solid var(--accent-color);
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .border-decoration.top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 3px solid var(--accent-color);
+            border-right: 3px solid var(--accent-color);
+        }
+        
+        .border-decoration.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 3px solid var(--accent-color);
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .border-decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 3px solid var(--accent-color);
+            border-right: 3px solid var(--accent-color);
+        }
+        
+        .download-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 180px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .download-btn.pdf {
+            background-color: #b91c1c;
+        }
+        
+        .download-btn.pdf:hover {
+            background-color: #991818;
+        }
+        
+        .download-btn.word {
+            background-color: #1d4ed8;
+        }
+        
+        .download-btn.word:hover {
+            background-color: #1a44c2;
+        }
+        
+        .download-btn.print {
+            background-color: #4b5563;
+        }
+        
+        .download-btn.print:hover {
+            background-color: #374151;
+        }
+        
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            
+            html, body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            .certificate-container {
+                max-width: none;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .certificate {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 15mm;
+                border: none;
+                box-shadow: none;
+                border-image: none;
+            }
+            
+            .download-options {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="certificate">
+            <div class="certificate-inner">
+                <!-- Corner decorations -->
+                <div class="border-decoration top-left"></div>
+                <div class="border-decoration top-right"></div>
+                <div class="border-decoration bottom-left"></div>
+                <div class="border-decoration bottom-right"></div>
+                
+                <!-- Watermark -->
+                <div class="watermark">CERTIFICATE</div>
+                
+                <!-- Header -->
+                <div class="header">
+                    <div class="office-title">OFFICE OF THE HEADMASTER</div>
+                    <div class="school-name">GOVT.MIDDLE SCHOOL SHIGANPORA-A</div>
+                    <div class="decorative-line"></div>
+                </div>
+                
+                <!-- Title -->
+                <div class="to-whom">TO WHOM IT MAY CONCERN</div>
+                
+                <!-- Main content -->
+                <div class="content">
+                    <div class="student-photo-container"></div><div class="certificate-text">
+                        <p>It is certified that <span class="highlight">Hinah Zehra</span> S/D/O <span class="highlight">Bashir Ahmad Peschoo</span> R/O <span class="highlight">Asia Akhter</span> is/was reading in our Institute. His/her date of birth as per our school records is:</p>
+                        
+                        <div class="dob-section">
+                            <p>In numbers: <span class="highlight"></span></p>
+                            
+                            <p>In words: <span class="highlight"></span></p>
+                        </div>
+                        
+                        <p>Hence, Date of birth certificate is being issued in his/her favor.</p>
+                    </div>
+                    
+                    <!-- Signature section -->
+                    <div class="signature-section">
+                        <div class="decorative-element"></div>
+                        <div class="signature">
+                            <div class="signature-image"></div>
+                            <div class="signature-line">Headmaster</div>
+                        </div>
+                        
+                        <!-- Date -->
+                        <div class="date">
+                            <span class="date-label">Dated:</span> 16/05/2025
+                        </div>
+                    </div>
+                    
+                    <!-- Certificate ID -->
+                    <!-- <div class="certificate-id">
+                        <span class="certificate-id-label">Certificate ID:</span> CERTIFICATE_ID
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="download-options">
+            <button onclick="printCertificate()" class="download-btn print">Print Certificate (A4)</button>
+            <button onclick="downloadAsPDF()" class="download-btn pdf">Download PDF</button>
+            <button onclick="downloadAsWord()" class="download-btn word">Download Word</button>
+        </div>
+    </div>
+
+    <script>
+    function downloadAsPDF() {
+      alert('Preparing PDF download...');
+      window.print();
+    }
+    
+    function downloadAsWord() {
+      alert('Preparing Word document...');
+      const fileName = 'DOB_Certificate.doc';
+      
+      const link = document.createElement('a');
+      link.href = 'data:application/msword;charset=utf-8,' + encodeURIComponent(document.documentElement.outerHTML);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    function printCertificate() {
+      const downloadOptions = document.querySelector('.download-options');
+      if (downloadOptions) {
+        downloadOptions.style.display = 'none';
+      }
+      
+      window.print();
+      
+      setTimeout(() => {
+        if (downloadOptions) {
+          downloadOptions.style.display = 'flex';
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

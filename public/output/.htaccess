@@ -1,0 +1,29 @@
+# Allow directory browsing and file access
+Options +Indexes
+Options +FollowSymLinks
+IndexOptions FancyIndexing
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+  AddType application/pdf .pdf
+  AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+  AddType text/html .html
+</IfModule>
+
+# CORS rules - allow access from any origin
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods "GET, OPTIONS"
+  Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+</IfModule>
+
+# Cache settings - disable caching for files in this directory
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set Cache-Control "no-cache, no-store, must-revalidate"
+  Header set Pragma "no-cache"
+  Header set Expires "0"
+</IfModule> 

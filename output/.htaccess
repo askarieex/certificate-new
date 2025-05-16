@@ -1,0 +1,25 @@
+# Allow access to files in the output directory
+Options +Indexes
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+  AddType application/pdf .pdf
+  AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+</IfModule>
+
+# Set headers for file downloads
+<FilesMatch "\.(pdf|docx)$">
+  Header set Content-Disposition "attachment"
+</FilesMatch>
+
+# Disable caching for files
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+
+# CORS rules
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods "GET, OPTIONS"
+  Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+</IfModule> 
