@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Student } from '../utils/types';
 import { createTemplateContent, generateCertificates } from '../utils/certificateUtils';
 import { exportToExcel } from '../utils/excelUtils';
+import { openFile, getFileUrl } from '../utils/fileUtils';
 import { 
   API_BASE_URL, 
   GENERATE_ENDPOINT, 
@@ -214,17 +215,10 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     ? Math.round((progress.current / progress.total) * 100) 
     : 0;
   
-  // If this is the viewCertificate function, update it to handle paths correctly
+  // Update the viewCertificate function to use our file utilities
   const viewCertificate = (certificatePath: string) => {
     if (!certificatePath) return;
-    
-    // Clean the path to ensure it doesn't start with a slash
-    const cleanPath = certificatePath.startsWith('/') 
-      ? certificatePath.substring(1) 
-      : certificatePath;
-      
-    // For static hosting, open in a new tab
-    window.open(cleanPath, '_blank');
+    openFile(certificatePath);
   };
   
   return (
@@ -297,9 +291,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
               onClick={() => {
                 const firstFile = generatedFiles[0];
                 if (firstFile) {
-                  // If it's a local path (not starting with http), add base URL only for remote paths
-                  const fullPath = firstFile.startsWith('http') ? firstFile : firstFile.startsWith('/') ? `${window.location.origin}${firstFile}` : firstFile;
-                  window.open(fullPath, '_blank');
+                  openFile(firstFile);
                 }
               }}
               disabled={generatedFiles.length === 0}
@@ -330,7 +322,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                         h1 { color: #2563eb; }
                         ul { list-style-type: none; padding: 0; }
                         li { margin-bottom: 10px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; }
-                        a { color: #2563eb; text-decoration: none; }
+                        a { color: #2563eb; text-decoration: none; cursor: pointer; }
                         a:hover { text-decoration: underline; }
                       </style>
                     </head>
@@ -339,20 +331,32 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                       <ul>
                         ${generatedFiles.map((file, index) => {
                           const fileName = file.split('/').pop();
-                          const isRemoteFile = file.startsWith('http');
-                          const fullPath = isRemoteFile ? file : file.startsWith('/') ? `${window.location.origin}${file}` : file;
-                          
                           return `<li>
                             <strong>${index + 1}.</strong> 
-                            <a href="${fullPath}" target="_blank">${fileName || file}</a>
-                            <small>(${isRemoteFile ? 'Remote' : 'Local'} file)</small>
+                            <a onclick="window.opener.postMessage('open:${file}', '*')">${fileName || file}</a>
                           </li>`;
                         }).join('')}
                       </ul>
+                      <script>
+                        // Handle click events on certificate links
+                        window.addEventListener('message', function(event) {
+                          if (typeof event.data === 'string' && event.data.startsWith('open:')) {
+                            const filePath = event.data.substring(5);
+                            window.opener.postMessage({ type: 'openFile', path: filePath }, '*');
+                          }
+                        });
+                      </script>
                     </body>
                   </html>
                 `);
                 win.document.close();
+                
+                // Listen for messages from the popup window
+                window.addEventListener('message', (event) => {
+                  if (event.data && event.data.type === 'openFile') {
+                    openFile(event.data.path);
+                  }
+                });
               }}
               className="px-3 py-1.5 border border-transparent rounded text-xs font-medium bg-white text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >

@@ -7,6 +7,9 @@ console.log('Preparing build files for deployment...');
 const outDir = path.join(__dirname, '..', 'out');
 const indexHtmlPath = path.join(outDir, 'index.html');
 const outputDir = path.join(outDir, 'output');
+const notFoundHtmlPath = path.join(__dirname, '..', 'public', '404.html');
+const outputNotFoundHtmlPath = path.join(outDir, '404.html');
+const outputDirNotFoundHtmlPath = path.join(outputDir, '404.html');
 
 // Verify output directory exists
 if (!fs.existsSync(outDir)) {
@@ -33,6 +36,22 @@ try {
             'This directory will contain generated certificates.\n' +
             'Certificate files will be saved here when you generate them through the application.'
         );
+    }
+    
+    // Copy 404.html to output directory if it exists in public
+    if (fs.existsSync(notFoundHtmlPath)) {
+        console.log('Copying 404.html to output directory...');
+        const notFoundHtml = fs.readFileSync(notFoundHtmlPath, 'utf8');
+        
+        // Copy to main out directory
+        fs.writeFileSync(outputNotFoundHtmlPath, notFoundHtml);
+        
+        // Also copy to output subdirectory to handle missing certificate files
+        fs.writeFileSync(outputDirNotFoundHtmlPath, notFoundHtml);
+        
+        console.log('404.html copied successfully');
+    } else {
+        console.warn('Warning: 404.html not found in public directory');
     }
 
     // Read index.html content

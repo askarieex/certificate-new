@@ -2,6 +2,7 @@ import { Student } from './types';
 import { API_BASE_URL } from './config';
 import { logger } from './loggingUtils';
 import { getFullUrl } from './environmentUtils';
+import { saveFile } from './fileUtils';
 
 // Create a separate function for getting download scripts to avoid template string issues
 const getDownloadScripts = (): string => {
@@ -608,8 +609,18 @@ export const generateCertificates = async (
       const safeName = student.name.replace(/[^a-zA-Z0-9_]/g, '_');
       const fileName = `${safeName}_certificate.html`;
       
-      // Use a relative path for static hosting (not starting with slash)
+      // Create output path (relative, not starting with slash)
       const outputPath = `output/${fileName}`;
+      
+      // Check if we're in a static build environment
+      if (process.env.NEXT_PUBLIC_IS_STATIC === 'true') {
+        // For static sites, save the content to localStorage
+        await saveFile(outputPath, htmlContent);
+      } else {
+        // In development, you might have server-side file saving
+        // This would be replaced with your actual file saving logic
+        console.log('Would save file to server at', outputPath);
+      }
       
       // Add to results
       results.push(outputPath);

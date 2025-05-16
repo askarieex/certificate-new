@@ -19,15 +19,18 @@ export const saveFile = async (
     if (isStaticBuild) {
       // In static builds, we can't write to server filesystem
       // Instead, we can use browser APIs to download the file
+      
+      // First store in localStorage so we can access it later
+      const filename = path.split('/').pop() || 'certificate.html';
+      localStorage.setItem(`certificate_${filename}`, content);
+      
+      // Create a download for the user
       const blob = new Blob([content], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       
       // Create a download link
       const a = document.createElement('a');
       a.href = url;
-      
-      // Extract filename from path
-      const filename = path.split('/').pop() || 'certificate.html';
       a.download = filename;
       
       // Trigger download
@@ -61,7 +64,24 @@ export const openFile = (path: string): void => {
   // Clean the path to ensure proper format
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
   
-  // Open in a new tab
+  // For static hosting, check if we have this stored in localStorage
+  const filename = cleanPath.split('/').pop() || '';
+  const storedContent = localStorage.getItem(`certificate_${filename}`);
+  
+  if (storedContent) {
+    // Create a blob and open it
+    const blob = new Blob([storedContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    // Open in a new tab
+    window.open(url, '_blank');
+    
+    // Don't revoke immediately so the user can view it
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    return;
+  }
+  
+  // Fallback to direct URL
   window.open(cleanPath, '_blank');
 };
 

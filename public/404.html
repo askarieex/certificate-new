@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate Recovery</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f7fa;
+      }
+      .container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+      }
+      h1 {
+        color: #2563eb;
+        margin-top: 0;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f9fafb;
+      }
+      .card-title {
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      .button {
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      .button:hover {
+        background-color: #1d4ed8;
+      }
+      .button-secondary {
+        background-color: #6b7280;
+      }
+      .button-secondary:hover {
+        background-color: #4b5563;
+      }
+      .success {
+        color: #10b981;
+        font-weight: 600;
+      }
+      .error {
+        color: #ef4444;
+        font-weight: 600;
+      }
+      .certificate-list {
+        list-style: none;
+        padding: 0;
+      }
+      .certificate-item {
+        padding: 10px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .certificate-item:last-child {
+        border-bottom: none;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Certificate Recovery</h1>
+
+      <div class="card">
+        <h2 class="card-title">We couldn't find the requested certificate</h2>
+        <p>
+          The certificate you're looking for might not exist on the server, but
+          we can try to recover it from your browser storage.
+        </p>
+
+        <div id="path-info">
+          <p>Requested path: <strong id="requested-path">...</strong></p>
+          <p>
+            Certificate filename: <strong id="certificate-filename">...</strong>
+          </p>
+        </div>
+
+        <button id="recover-btn" class="button">
+          Try to Recover Certificate
+        </button>
+        <button id="show-all-btn" class="button button-secondary">
+          Show All Stored Certificates
+        </button>
+      </div>
+
+      <div id="recovery-result" class="card hidden">
+        <h2 class="card-title">Recovery Result</h2>
+        <p id="recovery-message"></p>
+        <div id="recovery-actions" class="hidden">
+          <button id="open-btn" class="button">Open Certificate</button>
+          <button id="download-btn" class="button button-secondary">
+            Download Certificate
+          </button>
+        </div>
+      </div>
+
+      <div id="all-certificates" class="card hidden">
+        <h2 class="card-title">All Stored Certificates</h2>
+        <p id="certificate-count"></p>
+        <ul id="certificate-list" class="certificate-list"></ul>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the current path
+        const currentPath = window.location.pathname;
+        const filename = currentPath.split("/").pop();
+
+        // Update the UI with the path info
+        document.getElementById("requested-path").textContent = currentPath;
+        document.getElementById("certificate-filename").textContent =
+          filename || "(unknown)";
+
+        // Recover button click handler
+        document
+          .getElementById("recover-btn")
+          .addEventListener("click", function () {
+            recoverCertificate(filename);
+          });
+
+        // Show all certificates button click handler
+        document
+          .getElementById("show-all-btn")
+          .addEventListener("click", function () {
+            showAllCertificates();
+          });
+
+        // Check for certificate in localStorage
+        function recoverCertificate(filename) {
+          const recoveryResult = document.getElementById("recovery-result");
+          const recoveryMessage = document.getElementById("recovery-message");
+          const recoveryActions = document.getElementById("recovery-actions");
+
+          recoveryResult.classList.remove("hidden");
+
+          // Try to find any key that might match this certificate
+          let certificateContent = null;
+          const certificateKey = `certificate_${filename}`;
+
+          try {
+            certificateContent = localStorage.getItem(certificateKey);
+
+            if (certificateContent) {
+              recoveryMessage.innerHTML = `<span class="success">Success!</span> We found a certificate with filename "${filename}" in your browser storage.`;
+              recoveryActions.classList.remove("hidden");
+
+              // Set up the open button
+              document
+                .getElementById("open-btn")
+                .addEventListener("click", function () {
+                  openCertificate(certificateContent);
+                });
+
+              // Set up the download button
+              document
+                .getElementById("download-btn")
+                .addEventListener("click", function () {
+                  downloadCertificate(certificateContent, filename);
+                });
+            } else {
+              // Try to find any certificate
+              const certificateKeys = [];
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith("certificate_")) {
+                  certificateKeys.push(key);
+                }
+              }
+
+              if (certificateKeys.length > 0) {
+                recoveryMessage.innerHTML = `<span class="error">Certificate not found.</span> We couldn't find "${filename}", but you have ${certificateKeys.length} other certificate(s) stored in your browser.`;
+                recoveryActions.classList.add("hidden");
+              } else {
+                recoveryMessage.innerHTML = `<span class="error">No certificates found.</span> We couldn't find any certificates stored in your browser.`;
+                recoveryActions.classList.add("hidden");
+              }
+            }
+          } catch (error) {
+            recoveryMessage.innerHTML = `<span class="error">Error during recovery.</span> ${error.message}`;
+            recoveryActions.classList.add("hidden");
+          }
+        }
+
+        // Show all certificates in localStorage
+        function showAllCertificates() {
+          const allCertificates = document.getElementById("all-certificates");
+          const certificateCount = document.getElementById("certificate-count");
+          const certificateList = document.getElementById("certificate-list");
+
+          allCertificates.classList.remove("hidden");
+          certificateList.innerHTML = "";
+
+          // Find all certificate keys
+          const certificateKeys = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith("certificate_")) {
+              certificateKeys.push(key);
+            }
+          }
+
+          // Update the count
+          certificateCount.textContent = `Found ${certificateKeys.length} certificate(s) in your browser storage.`;
+
+          // Add each certificate to the list
+          if (certificateKeys.length > 0) {
+            certificateKeys.forEach((key) => {
+              const filename = key.replace("certificate_", "");
+              const content = localStorage.getItem(key);
+
+              const li = document.createElement("li");
+              li.className = "certificate-item";
+
+              const nameSpan = document.createElement("span");
+              nameSpan.textContent = filename;
+
+              const buttonsDiv = document.createElement("div");
+
+              const openButton = document.createElement("button");
+              openButton.className = "button";
+              openButton.textContent = "Open";
+              openButton.style.marginRight = "10px";
+              openButton.addEventListener("click", function () {
+                openCertificate(content);
+              });
+
+              const downloadButton = document.createElement("button");
+              downloadButton.className = "button button-secondary";
+              downloadButton.textContent = "Download";
+              downloadButton.addEventListener("click", function () {
+                downloadCertificate(content, filename);
+              });
+
+              buttonsDiv.appendChild(openButton);
+              buttonsDiv.appendChild(downloadButton);
+
+              li.appendChild(nameSpan);
+              li.appendChild(buttonsDiv);
+
+              certificateList.appendChild(li);
+            });
+          } else {
+            const li = document.createElement("li");
+            li.className = "certificate-item";
+            li.textContent = "No certificates found in browser storage.";
+            certificateList.appendChild(li);
+          }
+        }
+
+        // Helper function to open a certificate
+        function openCertificate(content) {
+          const blob = new Blob([content], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+        }
+
+        // Helper function to download a certificate
+        function downloadCertificate(content, filename) {
+          const blob = new Blob([content], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        // If this is a certificate path, auto-trigger recovery
+        if (
+          filename &&
+          filename.includes("certificate") &&
+          filename.endsWith(".html")
+        ) {
+          recoverCertificate(filename);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -49,7 +49,20 @@ const nextConfig = {
     env: {
         NEXT_PUBLIC_SITE_URL: 'https://grey-frog-921983.hostingersite.com',
         NEXT_PUBLIC_IS_STATIC: 'true'
-    }
+    },
+
+    // Redirects and rewrites for static hosting
+    async rewrites() {
+        return {
+            fallback: [
+                // Use the 404 page to handle certificate paths
+                {
+                    source: '/output/:path*',
+                    destination: '/404.html',
+                },
+            ],
+        };
+    },
 };
 
 module.exports = nextConfig; 
