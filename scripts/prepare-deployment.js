@@ -6,6 +6,7 @@ console.log('Preparing build files for deployment...');
 // Define paths
 const outDir = path.join(__dirname, '..', 'out');
 const indexHtmlPath = path.join(outDir, 'index.html');
+const outputDir = path.join(outDir, 'output');
 
 // Verify output directory exists
 if (!fs.existsSync(outDir)) {
@@ -21,6 +22,19 @@ if (!fs.existsSync(indexHtmlPath)) {
 }
 
 try {
+    // Ensure output directory exists
+    if (!fs.existsSync(outputDir)) {
+        console.log('Creating output directory for certificates...');
+        fs.mkdirSync(outputDir, { recursive: true });
+        
+        // Create a placeholder file to ensure the directory is not empty
+        fs.writeFileSync(
+            path.join(outputDir, 'README.txt'), 
+            'This directory will contain generated certificates.\n' +
+            'Certificate files will be saved here when you generate them through the application.'
+        );
+    }
+
     // Read index.html content
     let indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
 
@@ -83,6 +97,7 @@ try {
     console.log('1. Upload all files from the "out" directory to your Hostinger hosting root');
     console.log('2. Make sure .htaccess file is included in the upload');
     console.log('3. If using a custom domain, ensure DNS settings are correct');
+    console.log('4. IMPORTANT: Make sure the "output" directory exists and is writable by the web server');
 
 } catch (error) {
     console.error('Error preparing build files:', error);

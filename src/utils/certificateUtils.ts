@@ -608,8 +608,11 @@ export const generateCertificates = async (
       const safeName = student.name.replace(/[^a-zA-Z0-9_]/g, '_');
       const fileName = `${safeName}_certificate.html`;
       
+      // Use a relative path for static hosting (not starting with slash)
+      const outputPath = `output/${fileName}`;
+      
       // Add to results
-      results.push(`/output/${fileName}`);
+      results.push(outputPath);
       
       // Report progress
       if (onProgress) {

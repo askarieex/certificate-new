@@ -214,6 +214,19 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     ? Math.round((progress.current / progress.total) * 100) 
     : 0;
   
+  // If this is the viewCertificate function, update it to handle paths correctly
+  const viewCertificate = (certificatePath: string) => {
+    if (!certificatePath) return;
+    
+    // Clean the path to ensure it doesn't start with a slash
+    const cleanPath = certificatePath.startsWith('/') 
+      ? certificatePath.substring(1) 
+      : certificatePath;
+      
+    // For static hosting, open in a new tab
+    window.open(cleanPath, '_blank');
+  };
+  
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-lg font-medium text-gray-900 mb-4">Certificate Generation</h2>

@@ -48,6 +48,7 @@ const nextConfig = {
     // Environmental variables for the client
     env: {
         NEXT_PUBLIC_SITE_URL: 'https://grey-frog-921983.hostingersite.com',
+        NEXT_PUBLIC_IS_STATIC: 'true'
     }
 };
 
