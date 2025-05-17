@@ -254,6 +254,21 @@ export const createTemplateContent = (): string => {
             border-bottom: none;
         }
         
+        .editable-field {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-color: var(--accent-color);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            padding-bottom: 0;
+            display: inline-block;
+            border-bottom: none;
+            min-width: 100px;
+            outline: none;
+            cursor: text;
+        }
+        
         .dob-section {
             margin: 15px 0;
             padding: 0 0 0 15px;
@@ -442,6 +457,11 @@ export const createTemplateContent = (): string => {
             .download-options {
                 display: none;
             }
+            
+            .editable-field {
+                border: none;
+                outline: none;
+            }
         }
     </style>
 </head>
@@ -460,14 +480,14 @@ export const createTemplateContent = (): string => {
                 
                 <!-- Header -->
                 <div class="header">
-                    <div class="office-title">OFFICE OF THE HEADMASTER</div>
-                    <div class="school-name">GOVT.MIDDLE SCHOOL</div>
-                    <div class="school-name" style="font-size: 28px; margin-top: -5px;">SHIGANPORA-A</div>
+                    <div class="office-title" contenteditable="true">OFFICE OF THE HEADMASTER</div>
+                    <div class="school-name" contenteditable="true">GOVT.MIDDLE SCHOOL</div>
+                    <div class="school-name" style="font-size: 28px; margin-top: -5px;" contenteditable="true">SHIGANPORA-A</div>
                     <div class="decorative-line"></div>
                 </div>
                 
                 <!-- Title -->
-                <div class="to-whom">TO WHOM IT MAY CONCERN</div>
+                <div class="to-whom" contenteditable="true">TO WHOM IT MAY CONCERN</div>
                 
                 <!-- Main content -->
                 <div class="content">
@@ -477,14 +497,14 @@ export const createTemplateContent = (): string => {
                     </div>
                     
                     <div class="certificate-text">
-                        <p>It is certified that <span class="highlight">STUDENT_NAME</span> S/D/O <span class="highlight">FATHER_NAME</span> R/O <span class="highlight">MOTHER_NAME</span> is/was reading in our institute. His/her date of birth as per our school records is:</p>
+                        <p>It is certified that <span class="highlight" contenteditable="true">STUDENT_NAME</span> son/daughter of <span class="highlight" contenteditable="true">FATHER_NAME</span> and <span class="highlight" contenteditable="true">MOTHER_NAME</span>, R/O <span class="highlight" contenteditable="true">RESIDENCE_ADDRESS</span> is/was reading in our institute. His/her date of birth as per our school records is:</p>
                         
                         <div class="dob-section">
-                            <p>In numbers: <span class="highlight">DOB_VALUE</span></p>
-                            <p>In words: <span class="highlight">DOB_WORDS</span></p>
+                            <p>In numbers: <span class="highlight" contenteditable="true">DOB_VALUE</span></p>
+                            <p>In words: <span class="highlight" contenteditable="true">DOB_WORDS</span></p>
                         </div>
                         
-                        <p>Hence, Date of birth certificate is being issued in his/her favor.</p>
+                        <p contenteditable="true">Hence, Date of birth certificate is being issued in his/her favor.</p>
                     </div>
                     
                     <!-- Signature section -->
@@ -492,12 +512,12 @@ export const createTemplateContent = (): string => {
                         <div class="decorative-element"></div>
                         <div class="signature">
                             <div class="signature-image"></div>
-                            <div class="signature-line">Headmaster</div>
+                            <div class="signature-line" contenteditable="true">Headmaster</div>
                         </div>
                         
                         <!-- Date -->
                         <div class="date">
-                            <span class="date-label">Dated:</span> CURRENT_DATE
+                            <span class="date-label">Dated:</span> <span contenteditable="true">CURRENT_DATE</span>
                         </div>
                     </div>
                     
@@ -513,10 +533,45 @@ export const createTemplateContent = (): string => {
             <button onclick="printCertificate()" class="download-btn print">Print Certificate (A4)</button>
             <button onclick="downloadAsPDF()" class="download-btn pdf">Download PDF</button>
             <button onclick="downloadAsWord()" class="download-btn word">Download Word</button>
+            <button onclick="makeEditable()" class="download-btn word" style="background-color: #6B7280;">Edit Certificate</button>
         </div>
     </div>
 
     <script>${getDownloadScripts()}</script>
+    <script>
+    function makeEditable() {
+      // Make all highlighted elements editable
+      document.querySelectorAll('.highlight, .editable-field').forEach(el => {
+        el.contentEditable = "true";
+        el.style.border = "1px dashed #3B82F6";
+        el.style.padding = "0 5px";
+        el.classList.add('editable-active');
+      });
+      
+      // Show an editing helper message
+      const helper = document.createElement('div');
+      helper.style.position = "fixed";
+      helper.style.bottom = "20px";
+      helper.style.left = "20px";
+      helper.style.padding = "10px 15px";
+      helper.style.backgroundColor = "#2563EB";
+      helper.style.color = "white";
+      helper.style.borderRadius = "5px";
+      helper.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
+      helper.style.zIndex = "9999";
+      helper.innerHTML = "Certificate is now editable. Click on highlighted fields to edit.";
+      document.body.appendChild(helper);
+      
+      // Remove helper after 5 seconds
+      setTimeout(() => {
+        helper.style.opacity = "0";
+        helper.style.transition = "opacity 0.5s ease";
+        setTimeout(() => {
+          document.body.removeChild(helper);
+        }, 500);
+      }, 5000);
+    }
+    </script>
 </body>
 </html>`;
 
@@ -556,10 +611,14 @@ export const generateCertificateHtml = (student: Student, includePhotos: boolean
     }
   }
   
+  // Get residence/address info or provide a placeholder
+  const residenceAddress = student.address || 'Enter address here';
+  
   // Replace placeholders
   template = template.replace(/STUDENT_NAME/g, student.name || '');
   template = template.replace(/FATHER_NAME/g, student.fatherName || '');
   template = template.replace(/MOTHER_NAME/g, student.motherName || '');
+  template = template.replace(/RESIDENCE_ADDRESS/g, residenceAddress);
   template = template.replace(/DOB_VALUE/g, formattedDob);
   template = template.replace(/DOB_WORDS/g, dobInWords);
   template = template.replace(/CURRENT_DATE/g, new Date().toLocaleDateString('en-IN', {

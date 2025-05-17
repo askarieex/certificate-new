@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/react-datepicker": "^7.0.0",
     "@types/uuid": "^10.0.0",
     "docx": "^9.5.0",
     "html2pdf.js": "^0.10.3",
+    "js-cookie": "^3.0.5",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
@@ -27,13 +29,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/forms": "^0.5.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "tailwindcss": "^4",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
 }

@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Date of Birth Certificate</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
         
         :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #b91c1c;
-            --accent-color: #f59e0b;
-            --border-color: #1e3a8a;
+            --primary-color: #1a366d;
+            --secondary-color: #a92535;
+            --accent-color: #d7a03e;
+            --border-color: #1a366d;
             --background-color: #f9fafb;
-            --text-color: #1f2937;
+            --text-color: #2d3748;
             --light-color: #f3f4f6;
         }
         
@@ -24,7 +24,7 @@
         }
         
         body {
-            font-family: 'Raleway', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             line-height: 1.8;
             background: var(--background-color);
             margin: 0;
@@ -43,9 +43,8 @@
             margin: 0 auto;
             padding: 20mm 15mm;
             background: white;
-            border: 15px solid transparent;
-            border-image: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--secondary-color), var(--primary-color)) 1;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border: 1px solid #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             position: relative;
             overflow: hidden;
             page-break-after: always;
@@ -53,75 +52,56 @@
         
         .certificate-inner {
             position: relative;
-            padding: 20px;
-            border: 3px double var(--primary-color);
+            padding: 20px 30px;
             height: calc(100% - 40px);
             background: white;
-            background-image: 
-                radial-gradient(circle at 30% 20%, rgba(30, 58, 138, 0.03) 0%, transparent 300px),
-                radial-gradient(circle at 70% 80%, rgba(185, 28, 28, 0.03) 0%, transparent 300px);
+            border: 8px double;
+            border-image: linear-gradient(45deg, var(--accent-color), var(--primary-color)) 1;
         }
         
         .certificate-inner::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 1px solid rgba(30, 58, 138, 0.3);
-            pointer-events: none;
-            z-index: 0;
+            content: none;
         }
         
         .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 100px;
-            font-family: 'Playfair Display', serif;
-            color: rgba(30, 58, 138, 0.03);
-            pointer-events: none;
-            white-space: nowrap;
-            z-index: 0;
+            display: none;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             position: relative;
             z-index: 1;
-            padding-bottom: 20px;
-            border-bottom: 3px double var(--accent-color);
+            padding-bottom: 15px;
         }
         
         .office-title {
-            font-size: 18px;
-            font-family: 'Raleway', sans-serif;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             color: var(--primary-color);
             margin-bottom: 5px;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
         
         .school-name {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             color: var(--secondary-color);
             text-transform: uppercase;
             margin: 10px 0;
             letter-spacing: 2px;
             line-height: 1.2;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+            text-shadow: none;
         }
         
         .decorative-line {
-            width: 80%;
-            height: 3px;
-            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
-            margin: 10px auto;
+            width: 100%;
+            height: 1px;
+            background: #000000;
+            margin: 15px auto 0;
         }
         
         .decorative-symbol {
@@ -133,20 +113,18 @@
         
         .student-photo-container {
             float: right;
-            width: 100px;
-            height: 120px;
+            width: 130px;
+            height: 150px;
             margin-left: 20px;
             margin-bottom: 15px;
             position: relative;
             z-index: 1;
+            border: 1px solid var(--accent-color);
         }
         
         .student-photo {
             width: 100%;
             height: 100%;
-            border: 3px solid white;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            overflow: hidden;
             object-fit: cover;
             background-color: #f5f5f5;
         }
@@ -173,7 +151,7 @@
             text-align: center;
             margin-bottom: 40px;
             font-size: 24px;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: var(--primary-color);
@@ -187,7 +165,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100px;
-            height: 2px;
+            height: 1px;
             background: var(--accent-color);
         }
         
@@ -220,17 +198,34 @@
         .highlight {
             font-weight: 600;
             color: var(--primary-color);
-            border-bottom: 1px dotted var(--accent-color);
-            padding-bottom: 2px;
+            text-decoration: underline;
+            text-decoration-color: var(--accent-color);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            padding-bottom: 0;
             display: inline-block;
-            min-width: 120px;
+            border-bottom: none;
+        }
+        
+        .editable-field {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-color: var(--accent-color);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            padding-bottom: 0;
+            display: inline-block;
+            border-bottom: none;
+            min-width: 100px;
+            outline: none;
+            cursor: text;
         }
         
         .dob-section {
-            margin: 25px 0;
-            padding: 10px 15px;
-            background-color: rgba(245, 158, 11, 0.05);
-            border-left: 3px solid var(--accent-color);
+            margin: 15px 0;
+            padding: 0 0 0 15px;
+            border-left: 2px solid var(--accent-color);
         }
         
         .signature-section {
@@ -239,7 +234,6 @@
             align-items: flex-end;
             margin-top: 60px;
             position: relative;
-            padding-bottom: 60px;
             z-index: 1;
         }
         
@@ -248,9 +242,7 @@
             flex-direction: column;
             align-items: center;
             width: 200px;
-            background-color: rgba(255, 255, 255, 0.7);
             padding: 15px 10px 5px;
-            border-radius: 5px;
             position: relative;
             z-index: 2;
         }
@@ -265,24 +257,21 @@
         .signature-line {
             width: 180px;
             border-top: 1px solid var(--primary-color);
-            margin-top: 5px;
-            padding-top: 5px;
+            margin-top: 30px;
+            padding-top: 8px;
             font-weight: 700;
             font-size: 16px;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             text-align: center;
             color: var(--primary-color);
         }
         
         .date {
             position: absolute;
-            bottom: 0;
+            bottom: 40px;
             left: 0;
             font-weight: 500;
             font-size: 14px;
-            padding: 5px 10px;
-            background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
         }
         
         .date-label {
@@ -347,7 +336,7 @@
             color: white;
             border: none;
             border-radius: 4px;
-            font-family: 'Raleway', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
@@ -363,19 +352,19 @@
         }
         
         .download-btn.pdf {
-            background-color: #b91c1c;
+            background-color: #b23850;
         }
         
         .download-btn.pdf:hover {
-            background-color: #991818;
+            background-color: #9e3045;
         }
         
         .download-btn.word {
-            background-color: #1d4ed8;
+            background-color: #2a4d69;
         }
         
         .download-btn.word:hover {
-            background-color: #1a44c2;
+            background-color: #234260;
         }
         
         .download-btn.print {
@@ -421,6 +410,11 @@
             .download-options {
                 display: none;
             }
+            
+            .editable-field {
+                border: none;
+                outline: none;
+            }
         }
     </style>
 </head>
@@ -429,36 +423,41 @@
         <div class="certificate">
             <div class="certificate-inner">
                 <!-- Corner decorations -->
-                <div class="border-decoration top-left"></div>
-                <div class="border-decoration top-right"></div>
-                <div class="border-decoration bottom-left"></div>
-                <div class="border-decoration bottom-right"></div>
+                <div class="border-decoration top-left" style="display:none;"></div>
+                <div class="border-decoration top-right" style="display:none;"></div>
+                <div class="border-decoration bottom-left" style="display:none;"></div>
+                <div class="border-decoration bottom-right" style="display:none;"></div>
                 
                 <!-- Watermark -->
-                <div class="watermark">CERTIFICATE</div>
+                <div class="watermark" style="display:none;">CERTIFICATE</div>
                 
                 <!-- Header -->
                 <div class="header">
-                    <div class="office-title">OFFICE OF THE HEADMASTER</div>
-                    <div class="school-name">GOVT.MIDDLE SCHOOL SHIGANPORA-A</div>
+                    <div class="office-title" contenteditable="true">OFFICE OF THE HEADMASTER</div>
+                    <div class="school-name" contenteditable="true">GOVT.MIDDLE SCHOOL</div>
+                    <div class="school-name" style="font-size: 28px; margin-top: -5px;" contenteditable="true">SHIGANPORA-A</div>
                     <div class="decorative-line"></div>
                 </div>
                 
                 <!-- Title -->
-                <div class="to-whom">TO WHOM IT MAY CONCERN</div>
+                <div class="to-whom" contenteditable="true">TO WHOM IT MAY CONCERN</div>
                 
                 <!-- Main content -->
                 <div class="content">
-                    <div class="student-photo-container"></div><div class="certificate-text">
-                        <p>It is certified that <span class="highlight">Tahir Abass Dar</span> S/D/O <span class="highlight">Nissar Ahmad Dar</span> R/O <span class="highlight">Batoola Beigum</span> is/was reading in our Institute. His/her date of birth as per our school records is:</p>
+                    <!-- Student photo if included -->
+                    <div class="student-photo-container" id="photoContainer" style="display: block;">
+                        <img src="https://grey-frog-921983.hostingersite.com/photos/87380e7f-57a0-42a8-be7d-5bbf12e51225_g7ht1g0k.jpg" alt="Student Photo" class="student-photo" id="studentPhoto">
+                    </div>
+                    
+                    <div class="certificate-text">
+                        <p>It is certified that <span class="highlight" contenteditable="true">Tahir Abass Dar</span> son/daughter of <span class="highlight" contenteditable="true">Nissar Ahmad Dar</span> and <span class="highlight" contenteditable="true">Batoola Beigum</span>, R/O <span class="highlight" contenteditable="true">Enter address here</span> is/was reading in our institute. His/her date of birth as per our school records is:</p>
                         
                         <div class="dob-section">
-                            <p>In numbers: <span class="highlight">05-03-2019</span></p>
-                            
-                            <p>In words: <span class="highlight">5 of March 2019</span></p>
+                            <p>In numbers: <span class="highlight" contenteditable="true">05-03-2019</span></p>
+                            <p>In words: <span class="highlight" contenteditable="true">5 of March 2019</span></p>
                         </div>
                         
-                        <p>Hence, Date of birth certificate is being issued in his/her favor.</p>
+                        <p contenteditable="true">Hence, Date of birth certificate is being issued in his/her favor.</p>
                     </div>
                     
                     <!-- Signature section -->
@@ -466,12 +465,12 @@
                         <div class="decorative-element"></div>
                         <div class="signature">
                             <div class="signature-image"></div>
-                            <div class="signature-line">Headmaster</div>
+                            <div class="signature-line" contenteditable="true">Headmaster</div>
                         </div>
                         
                         <!-- Date -->
                         <div class="date">
-                            <span class="date-label">Dated:</span> 16/05/2025
+                            <span class="date-label">Dated:</span> <span contenteditable="true">17/05/2025</span>
                         </div>
                     </div>
                     
@@ -487,6 +486,7 @@
             <button onclick="printCertificate()" class="download-btn print">Print Certificate (A4)</button>
             <button onclick="downloadAsPDF()" class="download-btn pdf">Download PDF</button>
             <button onclick="downloadAsWord()" class="download-btn word">Download Word</button>
+            <button onclick="makeEditable()" class="download-btn word" style="background-color: #6B7280;">Edit Certificate</button>
         </div>
     </div>
 
@@ -523,5 +523,39 @@
       }, 1000);
     }
   </script>
+    <script>
+    function makeEditable() {
+      // Make all highlighted elements editable
+      document.querySelectorAll('.highlight, .editable-field').forEach(el => {
+        el.contentEditable = "true";
+        el.style.border = "1px dashed #3B82F6";
+        el.style.padding = "0 5px";
+        el.classList.add('editable-active');
+      });
+      
+      // Show an editing helper message
+      const helper = document.createElement('div');
+      helper.style.position = "fixed";
+      helper.style.bottom = "20px";
+      helper.style.left = "20px";
+      helper.style.padding = "10px 15px";
+      helper.style.backgroundColor = "#2563EB";
+      helper.style.color = "white";
+      helper.style.borderRadius = "5px";
+      helper.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
+      helper.style.zIndex = "9999";
+      helper.innerHTML = "Certificate is now editable. Click on highlighted fields to edit.";
+      document.body.appendChild(helper);
+      
+      // Remove helper after 5 seconds
+      setTimeout(() => {
+        helper.style.opacity = "0";
+        helper.style.transition = "opacity 0.5s ease";
+        setTimeout(() => {
+          document.body.removeChild(helper);
+        }, 500);
+      }, 5000);
+    }
+    </script>
 </body>
 </html>
